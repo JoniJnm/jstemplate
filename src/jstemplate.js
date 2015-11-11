@@ -32,7 +32,6 @@
 		this.code = '';
 		this.startBlocks = ['if', 'for', 'while', 'each'];
 		this.continueBlocks = ['else', 'else if', 'elseif'];
-		this.codes = [];
 	};
 
 	Evaler.prototype = {
