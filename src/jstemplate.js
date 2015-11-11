@@ -50,6 +50,9 @@
 		addRawHTML: function(html) {
 			this.add('html += '+JSON.stringify(html)+';');
 		},
+		addRawCode: function(code) {
+			this.add(code);
+		},
 		addReturnedCode: function(code) {
 			this.add('html += '+code+';');
 		},
@@ -101,6 +104,9 @@
 				else if (that.isEndBlock(code)) {
 					that.addEndBlock(code);
 				}
+				else if (that.isUnreturnedCode(code)) {
+					that.addRawCode(code);
+				}
 				else {
 					that.addReturnedCode(code);
 				}
@@ -121,6 +127,10 @@
 		},
 		isEndBlock: function(code) {
 			return code[0] === '/';
+		},
+		isUnreturnedCode: function(code) {
+			var clean = code.replace(/'.*?'/g, '').replace(/".*?"/g);
+			return clean.indexOf('=') !== -1 || clean.indexOf('++') !== -1 || clean.indexOf('--') !== -1;
 		},
 		getCode: function() {
 			return this.code;
