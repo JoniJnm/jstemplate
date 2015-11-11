@@ -2,7 +2,7 @@
 Simple JavaScript template engine
 
 Allowed statements: if, for, while, else, else if  
-Additional statements: elseif, each <array> in <var_name>
+Additional statements: elseif, each {array} in {var_name}
 
 ```html
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
