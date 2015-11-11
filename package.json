@@ -1,0 +1,32 @@
+{
+  "name": "jstemplate",
+  "version": "1.0.0",
+  "description": "Simple JavaScript template engine",
+  "dependencies": {},
+  "main": "dist/stemplate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://JoniJnm@github.com/JoniJnm/jstemplate.git"
+  },
+  "keywords": [
+    "template",
+    "engine"
+  ],
+  "author": "JoniJnm",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/JoniJnm/jstemplate/issues"
+  },
+  "homepage": "https://github.com/JoniJnm/jstemplate#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.12.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-uglify": "^1.4.2",
+    "jshint": "^2.8.0"
+  }
+}

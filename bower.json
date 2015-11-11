@@ -1,0 +1,23 @@
+{
+  "name": "jstemplate",
+  "description": "Simple JavaScript template engine",
+  "dependencies": {},
+  "main": "dist/jstemplate.js",
+  "authors": [
+    "JoniJnm"
+  ],
+  "license": "GPL-2.0",
+  "keywords": [
+    "template",
+    "engine"
+  ],
+  "moduleType": [],
+  "homepage": "http://www.jonijnm.es",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
