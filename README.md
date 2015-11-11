@@ -9,13 +9,13 @@ Additional statements: elseif, each <array> in <var_name>
 <script src="../src/jstemplate.js"></script>
 
 <div id="template" style="display:none">
-	<h1>{user.name.toUpperCase()}</h1>
+	<h1>{name.toUpperCase()}</h1>
 	<div>
-		My age is: <span>{user.age}</span>
+		My age is: <span>{age}</span>
 		{if user.skills}
-			<div>Skills: <span>{user.skills.length}</span></div>
+			<div>Skills: <span>{skills.length}</span></div>
 			<ul>
-				{each user.skills as skill}
+				{each skills as skill}
 					<li>{skill}</li>
 				{/each}
 			</ul>
@@ -23,8 +23,7 @@ Additional statements: elseif, each <array> in <var_name>
 			<div>No skills</div>
 		{/if}
 	</div>
-	<div>{otherParam}</div>
-	<div>Now: {(new Date()).toString()}</div>
+	<div style="color: {color}">Now: {(new Date()).toString()}</div>
 </div>
 
 <div id="user"></div>
@@ -35,14 +34,12 @@ var html = $('#template').html(); //get html template
 var template = jstemplate(html); //get template renderer
 var user = { //define user
 	name: 'Joni',
+	color: 'red',
 	age: 25,
 	skills: [
 		'JavaScript', 'HTML'
 	]
 };
-var output = template({ //get html uutput
-	user: user,
-	otherParam: 'testing'
-})
+var output = template(user); //get html output
 $('#user').html(output); //show output
 ```
