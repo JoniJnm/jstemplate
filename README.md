@@ -4,7 +4,7 @@ Simple JavaScript template engine
 Allowed statements: if, for, while, else, else if  
 Additional statements: elseif, foreach {array|obj} as {var_name}
 
-# Example
+# Full example
 
 ## template.html
 
@@ -44,10 +44,6 @@ Additional statements: elseif, foreach {array|obj} as {var_name}
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="../src/jstemplate.js"></script>
 
-<div id="template" style="display:none">
-	Here the template
-</div>
-
 <div id="user"></div>
 ```
 
@@ -80,6 +76,8 @@ $.ajax({ //get html template
 });
 ```
 
+# More examples
+
 ## For
 
 ```html
@@ -107,4 +105,27 @@ $.ajax({ //get html template
 		{i++}
 	{/while}
 </ul>
+```
+
+## Functions
+
+```html
+<script>
+var plus = function(n1, n2) {
+	return n1 + n2;
+};
+</script>
+
+<div>1+2 = {=plus(1, 2)} </div>
+<div>2+2 = {=plus(2, 2)} </div>
+<div>3+2 = {=plus(3, 2)} </div>
+```
+
+Do not declare functions directly, store them in vars
+
+```javascript
+//BAD CODE
+function plus(n1, n2) {
+	return n1 + n2;
+};
 ```

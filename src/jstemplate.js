@@ -93,7 +93,11 @@
 			var posStart = 0;
 			var html = this.html;
 			var that = this;
-			html.replace(/{(.*?)\}/g, function(match, code, pos) {
+			html = html.replace(/<script[^>]*>([\s\S]+)<\/script>/g, function(match, code) {
+				that.add(code); //add script code
+				return ''; //remove script from html
+			});
+			html.replace(/\{([\s\S]+?)\}/g, function(match, code, pos) {
 				code = code.replace(/^[ ]+/, '').replace(/ +$/, ''); //trim spaces
 				that.addRawHTML(html.substr(posStart, pos-posStart));
 				if (that.isEachBlock(code)) {
@@ -117,6 +121,7 @@
 				posStart = pos + match.length;
 			});
 			this.endCode();
+			console.log(this.code);
 		},
 		isEachBlock: function(code) {
 			return this.eachRegex.test(code);
