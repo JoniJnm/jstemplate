@@ -127,5 +127,5 @@ Do not declare functions directly, store them in vars
 //BAD CODE
 function plus(n1, n2) {
 	return n1 + n2;
-};
+}
 ```
