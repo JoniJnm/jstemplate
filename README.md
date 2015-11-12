@@ -2,28 +2,40 @@
 Simple JavaScript template engine
 
 Allowed statements: if, for, while, else, else if  
-Additional statements: elseif, each {array} in {var_name}
+Additional statements: elseif, foreach {array|obj} as {var_name}
 
 # Example
 
 ## template.html
 
 ```html
-<h1>{name.toUpperCase()}</h1>
+<h1>{=name.toUpperCase()}</h1>
 <div>
-	My age is: <span>{age}</span>
-	{if user.skills}
-		<div>Skills: <span>{skills.length}</span></div>
+	My age is: <span>{=age}</span>
+	{if skills}
+		{*I'm a comment*}
+		<div>
+			Skills: <span>{=skills.length}</span>
+		</div>
 		<ul>
-			{each skills as skill}
-				<li>{skill}</li>
-			{/each}
+			{foreach skills as skill}
+				<li>{=skill}</li>
+			{/foreach}
 		</ul>
 	{else}
 		<div>No skills</div>
 	{/if}
+
+	<div>
+		More data
+	</div>
+	<ul>
+	{foreach moreData as value}
+		<li>{=_key}: {=value}</li> {*_key is a special var, you can use _i too*}
+	{/foreach}
+	</ul>
 </div>
-<div style="color: {color}">Now: {(new Date()).toString()}</div>
+<div style="color: {=color}">Now: {=(new Date()).toString()}</div>
 ```
 
 ## index.html
@@ -46,14 +58,21 @@ $.ajax({ //get html template
 	url: 'template.html',
 	dataType: 'text' //plain text format!
 }).done(function(html) {
+	'use strict';
+
+	//var jstemplate = require('jstemplate');
 	var template = jstemplate(html); //get template renderer
 	var user = { //define user
 		name: 'Joni',
 		color: 'red',
 		age: 25,
 		skills: [
-			'JavaScript', 'HTML'
-		]
+			'JavaScript', 'HTML', 'CSS'
+		],
+		moreData: {
+			param1: 'value1',
+			param2: 'value2'
+		}
 	};
 
 	var output = template(user); //get html output
@@ -65,8 +84,11 @@ $.ajax({ //get html template
 
 ```html
 <ul>
-	{for var i=0; i<5; i++}
-		<li>{i+1}</li>
+	{for var i = 0; i < 6; i++}
+		{if i % 2 != 0}
+			{continue}
+		{/if}
+		<li>{=i}</li>
 	{/for}
 </ul>
 ```
@@ -75,9 +97,13 @@ $.ajax({ //get html template
 
 ```html
 <ul>
-	{var i=1}
-	{while i<=5}
-		<li>{i}</li>
+	{var i=0}
+	{maxShow = 3}
+	{while i <= 5}
+		<li>{=i}</li>
+		{if i+1 == maxShow}
+			{break}
+		{/if}
 		{i++}
 	{/while}
 </ul>

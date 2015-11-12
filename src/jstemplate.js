@@ -30,8 +30,9 @@
 	var Evaler = function(html) {
 		this.html = html;
 		this.code = '';
-		this.startBlocks = ['if', 'for', 'while', 'each'];
+		this.startBlocks = ['if', 'for', 'while', 'foreach'];
 		this.continueBlocks = ['else', 'else if', 'elseif'];
+		this.eachRegex = /^foreach ([\w\._]+) as ([\w_]+)$/;
 	};
 
 	Evaler.prototype = {
@@ -51,18 +52,20 @@
 			this.add('html += '+JSON.stringify(html)+';');
 		},
 		addRawCode: function(code) {
-			this.add(code);
+			this.add(code+';');
 		},
 		addReturnedCode: function(code) {
-			this.add('html += '+code+';');
+			this.add('html += '+code.substr(1)+';');
 		},
 		addEachBlock: function(code) {
-			var match = code.match(/^each ([\w\._]+) as ([\w_]+)$/);
+			var match = code.match(this.eachRegex);
 			var arr = match[1];
 			var item = match[2];
-			this.add('for (var __i in '+arr+') {');
-			this.add('if (!'+arr+'.hasOwnProperty(__i)) continue;');
-			this.add('var '+item+' = '+arr+'[__i];');
+			this.add('var _i = -1;');
+			this.add('for (var _key in '+arr+') {');
+			this.add('if (!'+arr+'.hasOwnProperty(_key)) continue;');
+			this.add('_i++;');
+			this.add('var '+item+' = '+arr+'[_key];');
 		},
 		addStartBlock: function(code) {
 			code = code.replace(/ /, ' ('); //the first space
@@ -91,6 +94,7 @@
 			var html = this.html;
 			var that = this;
 			html.replace(/{(.*?)\}/g, function(match, code, pos) {
+				code = code.replace(/^[ ]+/, '').replace(/ +$/, ''); //trim spaces
 				that.addRawHTML(html.substr(posStart, pos-posStart));
 				if (that.isEachBlock(code)) {
 					that.addEachBlock(code);
@@ -104,18 +108,18 @@
 				else if (that.isEndBlock(code)) {
 					that.addEndBlock(code);
 				}
-				else if (that.isUnreturnedCode(code)) {
-					that.addRawCode(code);
-				}
-				else {
+				else if (that.isReturnedCode(code)) {
 					that.addReturnedCode(code);
+				}
+				else if (!that.isComment(code)) {
+					that.addRawCode(code);
 				}
 				posStart = pos + match.length;
 			});
 			this.endCode();
 		},
 		isEachBlock: function(code) {
-			return code.indexOf('each ') === 0;
+			return this.eachRegex.test(code);
 		},
 		isStartBlock: function(code) {
 			var reg = new RegExp('^('+this.startBlocks.join('|')+')');
@@ -128,9 +132,11 @@
 		isEndBlock: function(code) {
 			return code[0] === '/';
 		},
-		isUnreturnedCode: function(code) {
-			var clean = code.replace(/'.*?'/g, '').replace(/".*?"/g);
-			return clean.indexOf('=') !== -1 || clean.indexOf('++') !== -1 || clean.indexOf('--') !== -1;
+		isReturnedCode: function(code) {
+			return code[0] === '=';
+		},
+		isComment: function(code) {
+			return code[0] === '*';
 		},
 		getCode: function() {
 			return this.code;
@@ -141,9 +147,22 @@
 		var evaler = new Evaler(html);
 		evaler.run();
 		var code = evaler.getCode();
-		var func = new Function('data', code);
+		var func;
+		try {
+			func = new Function('data', code);
+		}
+		catch(e) {
+			e.code = code;
+			throw e;
+		}
 		return function(data) {
-			return func.call(null, data);
+			try {
+				return func.call(null, data);
+			}
+			catch(e) {
+				e.code = code;
+				throw e;
+			}
 		};
 	};
 
