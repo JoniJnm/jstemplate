@@ -84,12 +84,11 @@
 			var match = code.match(this.eachRegex);
 			var arr = match[1];
 			var item = match[2];
-			this.add('var __arr = this.'+arr+';');
 			this.add('var _i = -1;');
-			this.add('for (var _key in __arr) {');
-			this.add('if (!__arr.hasOwnProperty(_key)) continue;');
+			this.add('for (var _key in '+arr+') {');
+			this.add('if (!'+arr+'.hasOwnProperty(_key)) continue;');
 			this.add('_i++;');
-			this.add('var '+item+' = __arr[_key];');
+			this.add('var '+item+' = '+arr+'[_key];');
 		},
 		addStartBlock: function(code) {
 			code = code.replace(/ /, ' ('); //the first space
