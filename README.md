@@ -51,13 +51,12 @@ Additional statements: elseif, foreach {array|obj} as {var_name}
 
 ```javascript
 $.ajax({ //get html template
-	url: 'template.html',
+	url: 'template.tpl',
 	dataType: 'text' //plain text format!
 }).done(function(html) {
 	'use strict';
 
-	//var jstemplate = require('jstemplate');
-	var template = jstemplate(html); //get template renderer
+	var template = jstemplate.parse(html); //get template renderer
 	var user = { //define user
 		name: 'Joni',
 		color: 'red',
@@ -153,7 +152,30 @@ var miFunc = function() {
 {#miFunc()} {*Not displayed*}
 ```
 
-## debug
+## Force return raw value
+
+jstemplate encode the values, you can force it to use raw values
+
+```html
+{var html = '<b>Hello!</b>'}
+{html} {*Ouput: &lt;b&gt;Hello!&lt;/b&gt;*}
+{.html} {*Ouput: <b>Hello!</b>*}
+```
+
+## self
+
+```html
+{foreach self as number}
+	{number}
+{/foreach}
+```
+
+```javascript
+var tpl = jstemplate.parse(html);
+var output = tpl([5,7,8,10]);
+```
+
+## Debug
 
 You can debug code simply adding a {debugger}, also when an error occurs the code created is in the Error Object
 
@@ -180,4 +202,21 @@ catch(e) {
 	}
 	throw e;
 }
+```
+
+## Requirejs
+
+```javascript
+define(function(require, exports, module) {
+	'use strict';
+
+	var userHTML = require('text!my_templates/user.tpl'),
+		jstemplate = require('libs/jstemplate');
+
+	var userTemplate = jstemplate.parse(userHTML);
+	var rended = userTemplate({
+		name: 'Joni'
+	});
+	console.log(rended);
+});
 ```

@@ -52,20 +52,20 @@
 			this.code += '\n';
 		},
 		initCode: function() {
-			this.add('with(__data) {');
-			this.add('var html = "";');
+			this.add('with(self) {');
+			this.add('var __html = "";');
 		},
 		getCode: function() {
 			return this.code;
 		},
 		endCode: function() {
 			this.add('}');
-			this.add('return html;');
+			this.add('return __html;');
 		},
 		addRawHTML: function(html) {
 			html = this.trim(html);
 			if (html) {
-				this.add('html += '+JSON.stringify(html)+';');
+				this.add('__html += '+JSON.stringify(html)+';');
 			}
 		},
 		addForcedRawCode: function(code) {
@@ -78,7 +78,10 @@
 			this.addReturnedCode(code.substr(1));
 		},
 		addReturnedCode: function(code) {
-			this.add('html += '+code+';');
+			this.add('__html += this.encode('+code+');');
+		},
+		addForcedReturnedRawCode: function(code) {
+			this.add('__html += '+code.substr(1)+';');
 		},
 		addEachBlock: function(code) {
 			var match = code.match(this.eachRegex);
@@ -144,6 +147,9 @@
 				else if (that.isForcedReturnCode(code)) {
 					that.addForcedReturnedCode(code);
 				}
+				else if (that.isForcedReturnRawCode(code)) {
+					that.addForcedReturnedRawCode(code);
+				}
 				else if (that.isRawCode(code)) {
 					that.addRawCode(code);
 				}
@@ -180,6 +186,9 @@
 		isForcedReturnCode: function(code) {
 			return code[0] === '=';
 		},
+		isForcedReturnRawCode: function(code) {
+			return code[0] === '.';
+		},
 		isComment: function(code) {
 			return code[0] === '*';
 		},
@@ -188,13 +197,13 @@
 		}
 	};
 
-	var jstemplate = function(html) {
+	var parse = function(html) {
 		var evaler = new Evaler(html);
 		evaler.run();
 		var code = evaler.getCode();
 		var func;
 		try {
-			func = new Function('__data', code);
+			func = new Function('self', code);
 		}
 		catch(e) {
 			e.code = code;
@@ -202,13 +211,32 @@
 		}
 		return function(data) {
 			try {
-				return func.call(data, data);
+				return func.call(jstemplate, data);
 			}
 			catch(e) {
 				e.code = code;
 				throw e;
 			}
 		};
+	};
+
+	var encode = function(html) {
+		if (html && html.toString) {
+			return html.toString()
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/'/g, '&#039;')
+				.replace(/"/g, '&quot;');
+		}
+		else {
+			return html;
+		}
+	};
+
+	var jstemplate = {
+		parse: parse,
+		encode: encode
 	};
 
 	return jstemplate;
