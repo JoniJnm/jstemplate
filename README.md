@@ -190,7 +190,7 @@ You can debug code simply adding a {debugger}, also when an error occurs the cod
 
 ```javascript
 try {
-	var template = jstemplate(html);
+	var template = jstemplate.parse(html);
 	var output = template(user); //get html output
 	$('#user').html(output); //show output
 }
