@@ -3,7 +3,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename')
     uglify = require('gulp-uglify'),
 	replace = require('gulp-replace');
-	
+
 var getDate = function() {
   var date = new Date();
 
@@ -17,7 +17,7 @@ var getDate = function() {
 gulp.task('compress', function() {
   var p = require('./package.json');
   var date = new Date();
-  gulp.src('src/*.js')
+  gulp.src('src/jstemplate.js')
     .pipe(uglify({
 		preserveComments: 'license'
 	}))

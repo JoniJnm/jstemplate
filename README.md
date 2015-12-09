@@ -70,7 +70,7 @@ $.ajax({ //get html template
 		}
 	};
 
-	var output = template(user); //get html output
+	var output = template.rende(user); //get html output
 	$('#user').html(output); //show output
 });
 ```
@@ -172,7 +172,7 @@ jstemplate encode the values, you can force it to use raw values
 
 ```javascript
 var tpl = jstemplate.parse(html);
-var output = tpl([5,7,8,10]);
+var output = tpl.rende([5,7,8,10]);
 ```
 
 ## Debug
@@ -191,14 +191,14 @@ You can debug code simply adding a {debugger}, also when an error occurs the cod
 ```javascript
 try {
 	var template = jstemplate.parse(html);
-	var output = template(user); //get html output
+	var output = template.rende(user); //get html output
 	$('#user').html(output); //show output
 }
 catch(e) {
-	//if there is an error in jstemplate, e.code has the code to eval
+	//if there is an error in jstemplate, e.source has the code to eval
 	console.error(e);
-	if (e.code) {
-		console.log(e.code);
+	if (e.source) {
+		console.log(e.source);
 	}
 	throw e;
 }
@@ -211,10 +211,24 @@ define(function(require, exports, module) {
 	'use strict';
 
 	var userHTML = require('text!my_templates/user.tpl'),
-		jstemplate = require('libs/jstemplate');
+		jstemplate = require('vendor/jstemplate');
 
 	var userTemplate = jstemplate.parse(userHTML);
-	var rended = userTemplate({
+	var rended = userTemplate.rende({
+		name: 'Joni'
+	});
+	console.log(rended);
+});
+```
+
+## Requirejs ([with plugin](https://github.com/JoniJnm/jstemplate/blob/master/src/tplparse.js))
+
+```javascript
+define(function(require, exports, module) {
+	'use strict';
+
+	var userTemplate = require('tplparse!my_templates/user');
+	var rended = userTemplate.rende({
 		name: 'Joni'
 	});
 	console.log(rended);

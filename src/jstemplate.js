@@ -1,35 +1,36 @@
 /*!
- * Simple JavaScript template engine
- * https://github.com/JoniJnm/jstemplate
- *
- * Copyright JoniJnm.es
- * Released under the GPL-2.0 license.
- *
- * Date: @DATE
- */
+* Simple JavaScript template engine
+* https://github.com/JoniJnm/jstemplate
+*
+* Copyright JoniJnm.es
+* Released under the GPL-2.0 license.
+*
+* Version: @VERSION
+* Date: @DATE
+*/
 
 /*jslint evil: true, noempty: false */
 
 (function (root, factory) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define([], factory);
-    }
+		// AMD. Register as an anonymous module.
+		define([], factory);
+	}
 	else if (typeof module !== 'undefined' && module.exports) {
-        // CommonJS/Node module
-        module.exports = factory();
-    }
+		// CommonJS/Node module
+		module.exports = factory();
+	}
 	else {
-        // Browser globals
-        root.jstemplate = factory();
-    }
+		// Browser globals
+		root.jstemplate = factory();
+	}
 }(this, function () {
 	'use strict';
 
-	var Evaler = function(html) {
+	var Parser = function(html) {
 		this.html = html;
-		this.code = '';
+		this.source = '';
 
 		this.startBlocks = ['if', 'for', 'while', 'foreach'];
 		this.continueBlocks = ['else', 'else if', 'elseif'];
@@ -46,25 +47,25 @@
 		this.eachRegex = /^foreach ([\w\._]+) as ([\w_]+)$/;
 	};
 
-	Evaler.prototype = {
+	Parser.prototype = {
 		add: function(code) {
-			this.code += code;
-			this.code += '\n';
+			this.source += code;
+			this.source += '\n';
 		},
-		initCode: function() {
+		initSource: function() {
 			this.add('with(self) {');
 			this.add('var __html = "";');
 		},
-		getCode: function() {
-			return this.code;
+		getSource: function() {
+			return this.source;
 		},
-		endCode: function() {
+		endSource: function() {
 			this.add('}');
 			this.add('return __html;');
 		},
 		addRawHTML: function(html) {
-			html = this.trim(html);
-			if (html) {
+			if (this.trim(html)) {
+				html = this.beauty(html);
 				this.add('__html += '+JSON.stringify(html)+';');
 			}
 		},
@@ -115,7 +116,7 @@
 			this.add('}');
 		},
 		run: function() {
-			this.initCode();
+			this.initSource();
 			var posStart = 0;
 			var html = this.html;
 			var that = this;
@@ -124,7 +125,7 @@
 				return ''; //remove script from html
 			});
 			html.replace(/\{([\s\S]+?)\}/g, function(match, code, pos) {
-				code = code.replace(/^[ ]+/, '').replace(/ +$/, ''); //trim spaces
+				code = code.replace(/^ +/, '').replace(/ +$/, ''); //trim spaces
 				that.addRawHTML(html.substr(posStart, pos-posStart));
 				if (that.isComment(code)) {
 					//noting
@@ -157,8 +158,9 @@
 					that.addReturnedCode(code);
 				}
 				posStart = pos + match.length;
+				return match;
 			});
-			this.endCode();
+			this.endSource();
 		},
 		isEachBlock: function(code) {
 			return this.eachRegex.test(code);
@@ -193,50 +195,66 @@
 			return code[0] === '*';
 		},
 		trim: function(str) {
-			return str.replace(/^(\t|\n|\r)*/gm, '').replace(/(\t|\n|\r)*$/gm, '');
+			return str
+			.replace(/^[\s]+/gm, '')
+			.replace(/[\s]+$/gm, '');
+		},
+		beauty: function(str) {
+			return str
+			.replace(/[\s]+/gm, ' ');
 		}
 	};
 
-	var parse = function(html) {
-		var evaler = new Evaler(html);
-		evaler.run();
-		var code = evaler.getCode();
-		var func;
-		try {
-			func = new Function('self', code);
-		}
-		catch(e) {
-			e.code = code;
-			throw e;
-		}
-		return function(data) {
+	var Render = function(func, source) {
+		this.func = func;
+		this.source = source;
+	};
+
+	Render.prototype = {
+		rende: function(data) {
 			try {
-				return func.call(jstemplate, data);
+				return this.func.call(this, data);
 			}
 			catch(e) {
-				e.code = code;
+				e.source = this.source;
 				throw e;
 			}
-		};
-	};
-
-	var encode = function(html) {
-		if (html && html.toString) {
-			return html.toString()
+		},
+		getSource: function() {
+			return this.source;
+		},
+		encode: function(html) {
+			if (html && html.toString) {
+				return html.toString()
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
 				.replace(/>/g, '&gt;')
 				.replace(/'/g, '&#039;')
 				.replace(/"/g, '&quot;');
-		}
-		else {
-			return html;
+			}
+			else {
+				return html;
+			}
 		}
 	};
 
 	var jstemplate = {
-		parse: parse,
-		encode: encode
+		parse: function(html) {
+			var parser = new Parser(html);
+			parser.run();
+			var source = parser.getSource();
+			var func;
+			try {
+				func = new Function('self', source);
+			}
+			catch(e) {
+				e.source = source;
+				throw e;
+			}
+
+			var render = new Render(func, source);
+			return render;
+		}
 	};
 
 	return jstemplate;
