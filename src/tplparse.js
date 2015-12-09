@@ -9,8 +9,8 @@
 (function () {
 	'use strict';
 
-	var jstemplatePath = './jstemplate'; //change if needed
-	var textPath = './text'; //change if needed http://requirejs.org/docs/download.html#text
+	var jstemplatePath = 'jstemplate';
+	var textPath = 'text'; //http://requirejs.org/docs/download.html#text
 
 	define([jstemplatePath], function (jstemplate) {
 		return {
