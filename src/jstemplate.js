@@ -160,6 +160,7 @@
 				posStart = pos + match.length;
 				return match;
 			});
+			this.addRawHTML(html.substr(posStart));
 			this.endSource();
 		},
 		isEachBlock: function(code) {
