@@ -1,7 +1,7 @@
 # jstemplate
 Simple JavaScript template engine
 
-Allowed statements: if, for, while, else, else if  
+Allowed statements: if, for, while, else, else if
 Additional statements: elseif, foreach {array|obj} as {var_name}
 
 # Full example
@@ -43,6 +43,7 @@ Additional statements: elseif, foreach {array|obj} as {var_name}
 ```html
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="../src/jstemplate.js"></script>
+<script src="test.js"></script>
 
 <div id="user"></div>
 ```

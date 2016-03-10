@@ -41,8 +41,9 @@
 		this.rawCodeRegexs = [
 			new RegExp('^('+this.reservedWords.join('|')+')( |$)'),
 			/^[\w\.$]+\s*=[^=]/, //asign value to var
-			/^[\w\.$]+\s*(\+\+|\-\-)$/ //increase value
+			/^[\w\.$]+\s*(\+\+|\-\-)$/ //in/decrease value
 		];
+		this.squareBracketRegex = /\[[^\[\]]+\]/g;
 
 		this.eachRegex = /^foreach ([\w\._]+) as ([\w_]+)$/;
 	};
@@ -179,6 +180,11 @@
 			return code[0] === '#';
 		},
 		isRawCode: function(code) {
+			while (this.squareBracketRegex.test(code)) {
+				code = code.replace(this.squareBracketRegex, '');
+				console.log(code);
+			}
+
 			for (var i=0; i<this.rawCodeRegexs.length; i++) {
 				if (this.rawCodeRegexs[i].test(code)) {
 					return true;
