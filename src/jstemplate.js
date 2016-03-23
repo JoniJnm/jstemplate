@@ -182,7 +182,6 @@
 		isRawCode: function(code) {
 			while (this.squareBracketRegex.test(code)) {
 				code = code.replace(this.squareBracketRegex, '');
-				console.log(code);
 			}
 
 			for (var i=0; i<this.rawCodeRegexs.length; i++) {
