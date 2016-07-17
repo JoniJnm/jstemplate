@@ -1,6 +1,6 @@
 {
   "name": "jstemplate-jonijnm",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Simple JavaScript template engine",
   "dependencies": {},
   "main": "dist/stemplate.js",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/JoniJnm/jstemplate#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-jshint": "^1.12.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
