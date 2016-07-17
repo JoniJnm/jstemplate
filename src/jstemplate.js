@@ -40,8 +40,10 @@
 		this.continueBlockRegex = new RegExp('^('+this.continueBlocks.join('|')+')( |$)');
 		this.rawCodeRegexs = [
 			new RegExp('^('+this.reservedWords.join('|')+')( |$)'),
-			/^[\w\.$]+\s*=[^=]/, //asign value to var
-			/^[\w\.$]+\s*(\+\+|\-\-)$/ //in/decrease value
+			/^[\w\.$]+\s*=[^=]/, //asign
+			/^[\w\.$]+\s*\+=[\sa-zA-Z\$]/, //append/increase
+			/^[\w\.$]+\s*\-=[\sa-zA-Z\$]/, //decrease
+			/^[\w\.$]+\s*(\+\+|\-\-)$/ //increase/decrease
 		];
 		this.squareBracketRegex = /\[[^\[\]]+\]/g;
 
